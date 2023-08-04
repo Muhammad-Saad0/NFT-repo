@@ -35,8 +35,8 @@ contract RandomIpfsNFT is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
     error RandomIpfsNft__TransferFailed();
 
     //events
-    event RandomWordsFulfilled();
-    event NFTMintRequested();
+    event NFTMinted(DogBreed dogBreed, address minter);
+    event NFTMintRequested(uint256 indexed requestId, address requester);
 
     constructor(
         uint256 _mintFee,
@@ -66,7 +66,7 @@ contract RandomIpfsNFT is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
         _safeMint(ownerOfNft, s_tokenCounter);
         _setTokenURI(s_tokenCounter, i_IpfsURIArray[uint256(dogBreed)]);
         s_tokenCounter++;
-        emit RandomWordsFulfilled();
+        emit NFTMinted(dogBreed, ownerOfNft);
     }
 
     function getRandomDogBreed(uint256 randomNumber) public pure returns (DogBreed) {
@@ -95,7 +95,7 @@ contract RandomIpfsNFT is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
         );
 
         requestIdtoSender[requestId] = msg.sender;
-        emit NFTMintRequested();
+        emit NFTMintRequested(requestId, msg.sender);
         return requestId;
     }
 

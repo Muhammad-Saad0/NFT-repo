@@ -3,12 +3,12 @@
     "useTabs": false,
     "semi": false,
     "singleQuote": false,
-    "printWidth": 75,
+    "printWidth": 65,
     "overrides": [
         {
             "files": "*.sol",
             "options": {
-                "printWidth": 90,
+                "printWidth": 80,
                 "tabWidth": 4,
                 "useTabs": false,
                 "singleQuote": false,
