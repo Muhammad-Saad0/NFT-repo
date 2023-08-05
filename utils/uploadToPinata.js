@@ -8,42 +8,49 @@ const pinata = new pinataSDK(
     process.env.PINATA_API_SECRET
 )
 
-const uploadToPinata = async (imagesPath) => {
-    return new Promise(async (resolve, reject) => {
-        const imagesFullPath = path.resolve(imagesPath)
-        const files = fs.readdirSync(imagesFullPath)
-        console.log(files)
-        console.log(imagesFullPath)
+const uploadFilesToPinata = async (imagesFullPath, files) => {
+    const options = {
+        pinataMetadata: {
+            name: "",
+        },
+    }
 
-        const options = {
-            pinataMetadata: {
-                name: "",
-            },
-            pinataOptions: {
-                cidVersion: 0,
-            },
-        }
-
-        for (const fileIndex in files) {
-            const readableStreamForFile = fs.createReadStream(
-                `${imagesFullPath}/${files[fileIndex]}`
+    let response = []
+    for (const fileIndex in files) {
+        const readableStreamForFile = fs.createReadStream(
+            `${imagesFullPath}/${files[fileIndex]}`
+        )
+        let filenameText = files[fileIndex].replace(".png", "")
+        options.pinataMetadata.name = filenameText
+        try {
+            const pinataResponse = await pinata.pinFileToIPFS(
+                readableStreamForFile,
+                options
             )
-            let filenameText = files[fileIndex].replace(
-                ".png",
-                ""
-            )
-            options.pinataMetadata.name = filenameText
-            try {
-                await pinata.pinFileToIPFS(
-                    readableStreamForFile,
-                    options
-                )
-            } catch (error) {
-                console.log(error)
-            }
+            response.push(pinataResponse)
+        } catch (error) {
+            console.log(error)
         }
-        resolve()
-    })
+    }
+    return response
 }
 
-module.exports = { uploadToPinata }
+async function storeTokenUriMetadata(metadata) {
+    const options = {
+        pinataMetadata: {
+            name: metadata.name,
+        },
+    }
+    try {
+        const response = await pinata.pinJSONToIPFS(
+            metadata,
+            options
+        )
+        return response
+    } catch (error) {
+        console.log(error)
+    }
+    return null
+}
+
+module.exports = { uploadFilesToPinata, storeTokenUriMetadata }
