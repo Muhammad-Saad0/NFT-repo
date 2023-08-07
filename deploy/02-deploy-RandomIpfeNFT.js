@@ -12,7 +12,7 @@ const {
 const fs = require("fs")
 const path = require("path")
 
-const IMAGES_PATH = "./images/"
+const IMAGES_PATH = "./images/randomNFT"
 
 const imagesFullPath = path.resolve(IMAGES_PATH)
 const files = fs.readdirSync(imagesFullPath)
