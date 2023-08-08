@@ -4,6 +4,7 @@ pragma solidity 0.8.19;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "base64-sol/base64.sol";
+import "hardhat/console.sol";
 
 contract DynamicSvgNFT is ERC721 {
     uint256 private s_tokenCounter;
@@ -16,6 +17,7 @@ contract DynamicSvgNFT is ERC721 {
     AggregatorV3Interface private immutable i_priceFeed;
     mapping(uint256 => int256) public tokenIdToHighValue;
 
+    //events
     event CreatedNFT(uint256 indexed tokenId, int256 highValue);
 
     constructor(
@@ -58,6 +60,7 @@ contract DynamicSvgNFT is ERC721 {
         return
             string(
                 abi.encodePacked(
+                    base64EncodingJSONPrefix,
                     Base64.encode(
                         bytes(
                             abi.encodePacked(
@@ -72,5 +75,21 @@ contract DynamicSvgNFT is ERC721 {
                     )
                 )
             );
+    }
+
+    function getLowSvg() public view returns (string memory) {
+        return i_lowImageURI;
+    }
+
+    function getHighSvg() public view returns (string memory) {
+        return i_highImageURI;
+    }
+
+    function getPriceFeed() public view returns (AggregatorV3Interface) {
+        return i_priceFeed;
+    }
+
+    function getHighValue(uint256 tokenId) public view returns (int256) {
+        return tokenIdToHighValue[tokenId];
     }
 }
